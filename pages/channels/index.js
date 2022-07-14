@@ -63,7 +63,7 @@ export default function Home() {
             <h1 className='text-7xl p-10'>Pick the channel you want to add Banter</h1>
             <div className={style.suggestion}>We recommend adding banter to a channel that is already used for small talk and getting to know each other. #random or # general are usually good fits.</div>
             <input className='border-neutral-700 rounded-md border-2 h-8 w-64 mb-10 text-center' type="text" id="channel" name="channel" />
-            <div className={style.suggestion}>Don't see your private channel? Go to the Slack channel you'd like to set up Guft in, type "/invite @Guftbot"</div>
+            <div className={style.suggestion}>{"Don't see your private channel? Go to the Slack channel you'd like to set up Guft in, type '/invite @Guftbot'"}</div>
             <div className={style.button} onClick={nextPage}>
               <h1>{"Next >"}</h1>
             </div>
@@ -73,7 +73,7 @@ export default function Home() {
         return (
           <div className="flex justify-center items-center flex-col pt-40 text-center space-y-2">
             <h1 className='text-7xl p-10'>What kinds of Banter do you want?</h1>
-            <div className={style.suggestion}>Banter has several kinds of topics to initiate conversation. Banter is optimized to break the ice with fun and light prompts at first, getting deeper as time goes on. Don't worry we won't prompt anything too spicy, safe for work only!</div>
+            <div className={style.suggestion}>{"Banter has several kinds of topics to initiate conversation. Banter is optimized to break the ice with fun and light prompts at first, getting deeper as time goes on. Don't worry we won't prompt anything too spicy, safe for work only!"}</div>
             <div className={style.suggestion}>Banter works best when all options are enabled!</div>
             <div className='flex'>
               <div className='p-4'>
