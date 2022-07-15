@@ -1,9 +1,14 @@
 import { useSession, signIn, signOut } from "next-auth/react"
 import LoginButton from "../../components/login-btn"
+import AddToSlack from "../../components/add-to-slack"
 
-export default function Component({myId, otherId}) {
+export default function Component({ myId, otherId }) {
     return (
-        <LoginButton />
+        <>
+            <LoginButton />
+        <br />
+            <AddToSlack />
+        </>
     )
 }
 
