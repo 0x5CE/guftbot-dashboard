@@ -7,4 +7,11 @@ const NextApiClient = axios.create({
   },
 });
 
-export { NextApiClient };
+const BotApiClient = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+export { NextApiClient, BotApiClient };
