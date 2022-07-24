@@ -17,7 +17,6 @@ const Home: NextPage = () => {
         const response = await NextApiClient.post("exchange", {
           code: router.query.code,
         });
-        console.log(response.data);
       })();
     }
   }, [router.query]);

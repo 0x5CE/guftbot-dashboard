@@ -1,4 +1,6 @@
 import { atom, selector } from "recoil";
+import { Channel } from "../../types/channel";
+import { QueuedQuestions } from "../../types/question";
 import { Tenant } from "../../types/tenant";
 
 export const tenantState = atom<Tenant | null>({

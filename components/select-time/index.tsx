@@ -28,16 +28,12 @@ const possibleSchedules = [
 ];
 
 interface SelectTimeProps {
-  updateTime: (time: Date, schedule: string) => void;
+  updateTime: (time: string, schedule: string) => void;
 }
 
 export const SelectTime = ({ updateTime }: SelectTimeProps) => {
   const [selectedSchedule, setSelectedSchedule] = useState("");
   const [selectedTime, setSelectedTime] = useState<Date | null>(null);
-
-  useEffect(() => {
-    console.log("selectedTime", selectedTime);
-  }, [selectedTime]);
 
   return (
     <Flex
@@ -69,7 +65,8 @@ export const SelectTime = ({ updateTime }: SelectTimeProps) => {
       <Button
         disabled={!selectedSchedule || !selectedTime}
         onClick={() =>
-          selectedTime && updateTime(selectedTime, selectedSchedule)
+          selectedTime &&
+          updateTime(selectedTime.toISOString(), selectedSchedule)
         }
       >
         Finish

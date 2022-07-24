@@ -1,5 +1,7 @@
 import { SettingsIcon } from "@chakra-ui/icons";
 import { Flex, HStack, Button, Text, GridItem } from "@chakra-ui/react";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { Channel } from "../../types/channel";
 
 interface UpdateSettingsProps {
@@ -7,6 +9,8 @@ interface UpdateSettingsProps {
 }
 
 export const UpdateSettingsCard = ({ channel }: UpdateSettingsProps) => {
+  const router = useRouter();
+
   return (
     <GridItem>
       <Flex
@@ -28,10 +32,18 @@ export const UpdateSettingsCard = ({ channel }: UpdateSettingsProps) => {
           <Text fontWeight={"bold"}>{`${channel.schedule} `}</Text>
           <Text>at</Text>
           <Text fontWeight="bold">
-            {new Date(channel.time).toLocaleTimeString("hh:mm tt")}
+            {new Date(channel.time).toLocaleTimeString("en-US", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
           </Text>
         </HStack>
-        <Button size={"sm"} leftIcon={<SettingsIcon />} colorScheme={"teal"}>
+        <Button
+          onClick={() => router.push(`/settings/${channel.id}`)}
+          size={"sm"}
+          leftIcon={<SettingsIcon />}
+          colorScheme={"teal"}
+        >
           Update Settings
         </Button>
       </Flex>

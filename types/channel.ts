@@ -1,3 +1,4 @@
+import { QueuedQuestions } from "./question";
 import { Tenant } from "./tenant";
 
 export interface Channel {
@@ -10,8 +11,10 @@ export interface Channel {
 
   schedule: string;
 
-  time: Date;
+  time: string;
 
   createdAt: Date;
   updatedAt: Date;
+
+  questionsQueue: QueuedQuestions[];
 }

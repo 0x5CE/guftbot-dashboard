@@ -33,16 +33,6 @@ export const AddChannel = ({ updateChannel }: AddChannelProps) => {
   useEffect(() => {
     fetchChannels();
   }, []);
-  useEffect(() => {
-    if (availableChannels.length > 0) {
-      console.log("got available channels");
-      console.log({ availableChannels });
-    }
-  }, [availableChannels]);
-
-  useEffect(() => {
-    console.log(channel);
-  }, [channel]);
 
   return (
     <Flex

@@ -63,9 +63,18 @@ export const Wizard = () => {
     nextStep();
   };
 
-  const updateTimeSettings = (time: Date, schedule: string) => {
+  const updateTimeSettings = (time: string, schedule: string) => {
+    const timezoneOffset = new Date().getTimezoneOffset();
+
+    const hours = Math.floor(timezoneOffset / 60);
+    const minutes = timezoneOffset % 60;
+
+    const date = new Date(time);
+    date.setHours(date.getHours() + hours);
+    date.setMinutes(date.getMinutes() + minutes);
+
     setSelectedSchedule({
-      time,
+      time: date.toISOString(),
       schedule,
     });
   };

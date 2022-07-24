@@ -29,7 +29,6 @@ const Home: NextPage = () => {
           router.push("/error");
           return;
         }
-        console.log({ response });
         setCreateTenantBody(createTenantPayload(response));
       })();
     }
@@ -39,11 +38,9 @@ const Home: NextPage = () => {
     if (!createTenantBody) {
       return;
     }
-    console.log("tenant body created");
     (async () => {
       const response = await BotApiClient.post("tenant/add", createTenantBody);
       if (response.status >= 200 && response.status < 300) {
-        console.log("success response from tenant/add", response.data);
         setTenant(response.data);
       }
     })();

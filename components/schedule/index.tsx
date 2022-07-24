@@ -21,6 +21,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
+import { useRecoilValue } from "recoil";
+import { QueuedQuestions } from "../../types/question";
 import { DraggableTableRow } from "./draggable-table-row";
 import { StaticTableRow } from "./static-table-row";
 
@@ -31,30 +33,6 @@ export interface Data {
   topics: string;
   actions: boolean;
 }
-
-const rowsData: Data[] = [
-  {
-    date: "Sat, Jul 23",
-    prompt: "Prompt 1",
-    isPicture: true,
-    topics: "Topic 1, Topic 2",
-    actions: true,
-  },
-  {
-    date: "Sat, Jul 23",
-    prompt: "Prompt 2",
-    isPicture: false,
-    topics: "Topic 1, Topic 2",
-    actions: true,
-  },
-  {
-    date: "Sat, Jul 24",
-    prompt: "Prompt 3",
-    isPicture: false,
-    topics: "Banter",
-    actions: true,
-  },
-];
 
 const columnHelper = createColumnHelper<Data>();
 
@@ -76,8 +54,32 @@ const columns = [
   }),
 ];
 
-export const Schedule = () => {
+const convertQuestionsToRow = (questions: QueuedQuestions[]): Data[] => {
+  if (!questions) {
+    return [];
+  }
+  const data: Data[] = questions.map((q) => ({
+    date: new Date(q.date).toDateString().split(" ").slice(0, -1).join(" "),
+    prompt: q.text,
+    isPicture: q.image_url ? true : false,
+    topics: q.category.name,
+    actions: true,
+  }));
+
+  return data;
+};
+
+interface ScheduleProps {
+  questions: QueuedQuestions[];
+}
+
+export const Schedule = ({ questions }: ScheduleProps) => {
   const [activeId, setActiveId] = useState<number | null>(null);
+
+  const rowsData = useMemo<Data[]>(() => {
+    return convertQuestionsToRow(questions);
+  }, [questions]);
+
   const [data, setData] = useState(rowsData);
   const items = useMemo(() => data.map((_, index) => index + 1), [data]);
 

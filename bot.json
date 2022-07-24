@@ -9,7 +9,7 @@
     }
   },
   "oauth_config": {
-    "redirect_urls": ["https://5061-2400-adc7-93b-7400-00-2.ngrok.io/auth"],
+    "redirect_urls": ["https://7f6e-2400-adc7-93b-7400-00-1.ngrok.io//auth"],
     "scopes": {
       "user": ["identity.basic"],
       "bot": [

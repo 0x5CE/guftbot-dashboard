@@ -10,3 +10,15 @@ export interface Question {
 
   updatedAt: Date;
 }
+
+export interface QueuedQuestions {
+  date: string;
+  id: string;
+  text: string;
+  image_url?: string;
+  isEdited: boolean;
+  category: {
+    id: string;
+    name: string;
+  };
+}

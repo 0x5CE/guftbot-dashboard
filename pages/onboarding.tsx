@@ -9,11 +9,6 @@ import { Wizard } from "../components/wizard";
 
 const Onboarding: NextPage = () => {
   const [tenant, setTenant] = useRecoilState(tenantState);
-
-  useEffect(() => {
-    console.log("Tenant in onboarding", tenant);
-  }, []);
-
   return (
     <>
       <Navbar>

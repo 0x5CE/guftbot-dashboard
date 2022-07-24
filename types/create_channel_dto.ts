@@ -5,7 +5,7 @@ export interface ChannelSettingsDto {
 
 export interface ScheduleSettingsDto {
   schedule: string;
-  time: Date;
+  time: string;
 }
 
 export interface CreateChannelDto {
@@ -13,6 +13,6 @@ export interface CreateChannelDto {
   channel_id: string;
   categories: string[];
   schedule: string;
-  time: Date;
+  time: string;
   tenant_id: string;
 }

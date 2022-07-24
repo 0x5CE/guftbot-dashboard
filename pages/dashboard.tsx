@@ -20,10 +20,6 @@ import { AddChannelCard } from "../components/add-channel-card";
 const Dashboard: NextPage = () => {
   const [tenant, _] = useRecoilState(tenantState);
 
-  useEffect(() => {
-    console.log({ tenant });
-  }, [tenant]);
-
   return (
     <div>
       <Navbar>
