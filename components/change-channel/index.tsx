@@ -1,16 +1,12 @@
-import { Button, Flex, Heading, Select, Text } from "@chakra-ui/react";
-import { ChannelsListResponse } from "@slack/web-api";
-import { Channel } from "@slack/web-api/dist/response/AdminUsergroupsListChannelsResponse";
+import { Flex, Heading, Select, Button, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { NextApiClient } from "../axios";
 import { accessTokenSelector } from "../states";
+import { ChannelsListResponse } from "@slack/web-api";
+import { Channel } from "@slack/web-api/dist/response/AdminUsergroupsListChannelsResponse";
 
-interface AddChannelProps {
-  updateChannel: (channel: Channel) => void;
-}
-
-export const AddChannel = ({ updateChannel }: AddChannelProps) => {
+const ChangeChannel = () => {
   const [channel, setChannel] = useState<Channel | null>(null);
   const [availableChannels, setAvailableChannels] = useState<Channel[]>([]);
   const accessToken = useRecoilValue(accessTokenSelector);
@@ -40,7 +36,7 @@ export const AddChannel = ({ updateChannel }: AddChannelProps) => {
       mt={5}
     >
       <Heading>Pick the channel you want to add Banter</Heading>
-      <Text>
+      <Text textAlign={"center"}>
         We recommend adding Banter to a channel that is already used for small
         talk and getting to know each other. #random or #general are usually
         good fits.
@@ -59,12 +55,9 @@ export const AddChannel = ({ updateChannel }: AddChannelProps) => {
           );
         })}
       </Select>
-      <Button
-        disabled={!channel}
-        onClick={() => (channel ? updateChannel(channel) : null)}
-      >
-        Add Channel
-      </Button>
+      <Button disabled={!channel}>Update</Button>
     </Flex>
   );
 };
+
+export { ChangeChannel };

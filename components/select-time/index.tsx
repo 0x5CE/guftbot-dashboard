@@ -14,7 +14,7 @@ import { Category } from "../../types/category";
 import { BotApiClient } from "../axios";
 import timezones from "./timezones.json";
 
-const possibleSchedules = [
+export const possibleSchedules = [
   "Everyday",
   "Weekdays",
   "Weekends",

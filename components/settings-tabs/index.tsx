@@ -1,4 +1,7 @@
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@chakra-ui/react";
+import { ChangeCategories } from "../change-categories";
+import { ChangeChannel } from "../change-channel";
+import { ChangeTime } from "../change-time";
 import { SettingsOverview } from "../settings-overview";
 
 const SettingsTabs = () => {
@@ -15,7 +18,13 @@ const SettingsTabs = () => {
           <SettingsOverview />
         </TabPanel>
         <TabPanel>
-          <p>two!</p>
+          <ChangeChannel />
+        </TabPanel>
+        <TabPanel>
+          <ChangeCategories />
+        </TabPanel>
+        <TabPanel>
+          <ChangeTime />
         </TabPanel>
       </TabPanels>
     </Tabs>

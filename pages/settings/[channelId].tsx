@@ -2,7 +2,7 @@ import { Box, Heading } from "@chakra-ui/react";
 import { NextPage } from "next";
 import { NavItems } from "../../components/nav-items";
 import { Navbar } from "../../components/Navbar";
-import { SettingsTabs } from "../../components/settings-content";
+import { SettingsTabs } from "../../components/settings-tabs";
 import { Sidebar } from "../../components/sidebar";
 
 const Settings: NextPage = () => {

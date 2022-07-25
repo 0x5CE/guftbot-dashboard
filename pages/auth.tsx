@@ -51,6 +51,7 @@ const Home: NextPage = () => {
     if (!tenant) {
       return;
     }
+    localStorage.setItem("tenant", JSON.stringify(tenant));
     router.push("/onboarding");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tenant]);

@@ -1,4 +1,3 @@
-import { ArrowDownIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { Table, Tbody, Th, Thead, Tr } from "@chakra-ui/react";
 import {
   closestCenter,
@@ -13,15 +12,18 @@ import {
   KeyboardSensor,
 } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import { arrayMove } from "@dnd-kit/sortable";
+import {
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useMemo, useState } from "react";
-import { useRecoilValue } from "recoil";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { QueuedQuestions } from "../../types/question";
 import { DraggableTableRow } from "./draggable-table-row";
 import { StaticTableRow } from "./static-table-row";
@@ -71,9 +73,15 @@ const convertQuestionsToRow = (questions: QueuedQuestions[]): Data[] => {
 
 interface ScheduleProps {
   questions: QueuedQuestions[];
+  setUnsavedChanges: Dispatch<SetStateAction<boolean>>;
+  setQuestions: Dispatch<SetStateAction<QueuedQuestions[]>>;
 }
 
-export const Schedule = ({ questions }: ScheduleProps) => {
+export const Schedule = ({
+  questions,
+  setQuestions,
+  setUnsavedChanges,
+}: ScheduleProps) => {
   const [activeId, setActiveId] = useState<number | null>(null);
 
   const rowsData = useMemo<Data[]>(() => {
@@ -82,6 +90,10 @@ export const Schedule = ({ questions }: ScheduleProps) => {
 
   const [data, setData] = useState(rowsData);
   const items = useMemo(() => data.map((_, index) => index + 1), [data]);
+
+  useEffect(() => {
+    setData(rowsData);
+  }, [rowsData]);
 
   const table = useReactTable({
     data,
@@ -102,11 +114,24 @@ export const Schedule = ({ questions }: ScheduleProps) => {
   const handleDragEnd = (e: DragEndEvent) => {
     const { active, over } = e;
     if (active.id !== over?.id) {
-      setData((data) => {
-        const oldIndex = items.indexOf(active.id as number);
-        const newIndex = items.indexOf(over?.id as number);
-        return arrayMove(data, oldIndex, newIndex);
-      });
+      const oldIndex = items.indexOf(active.id as number);
+      const newIndex = items.indexOf(over?.id as number);
+
+      const { date: q1Date, ...q1Data } = questions[oldIndex];
+      const { date: q2Date, ...q2Data } = questions[newIndex];
+
+      questions[newIndex] = {
+        date: q2Date,
+        ...q1Data,
+      };
+
+      questions[oldIndex] = {
+        date: q1Date,
+        ...q2Data,
+      };
+
+      setQuestions([...questions]);
+      setUnsavedChanges(true);
     }
 
     setActiveId(null);
@@ -150,9 +175,11 @@ export const Schedule = ({ questions }: ScheduleProps) => {
           ))}
         </Thead>
         <Tbody>
-          {table.getRowModel().rows.map((row, index) => (
-            <DraggableTableRow key={index} row={row} />
-          ))}
+          <SortableContext items={items} strategy={verticalListSortingStrategy}>
+            {table.getRowModel().rows.map((row, index) => (
+              <DraggableTableRow key={index} row={row} />
+            ))}
+          </SortableContext>
         </Tbody>
       </Table>
       <DragOverlay>

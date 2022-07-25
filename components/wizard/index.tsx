@@ -100,6 +100,7 @@ export const Wizard = () => {
     if (res.status > 200 && res.status < 300) {
       setIsNewChannelCreated(true);
       setTenant(res.data);
+      localStorage.setItem("tenant", JSON.stringify(res.data));
     }
   };
 
