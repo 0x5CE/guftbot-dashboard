@@ -4,7 +4,7 @@ import { Channel } from "@slack/web-api/dist/response/AdminUsergroupsListChannel
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { NextApiClient } from "../axios";
-import { accessTokenSelector } from "../states";
+import { accessTokenSelector, joinedChannelIdsSelector } from "../states";
 
 interface AddChannelProps {
   updateChannel: (channel: Channel) => void;
@@ -14,6 +14,7 @@ export const AddChannel = ({ updateChannel }: AddChannelProps) => {
   const [channel, setChannel] = useState<Channel | null>(null);
   const [availableChannels, setAvailableChannels] = useState<Channel[]>([]);
   const accessToken = useRecoilValue(accessTokenSelector);
+  const joinedChannels = useRecoilValue(joinedChannelIdsSelector);
 
   const fetchChannels = () => {
     return NextApiClient.post<ChannelsListResponse>("channel_list", {
@@ -22,7 +23,11 @@ export const AddChannel = ({ updateChannel }: AddChannelProps) => {
       if (res.status >= 200 && res.status < 300) {
         const channels = res.data.channels;
         if (channels) {
-          setAvailableChannels(channels);
+          setAvailableChannels(() => {
+            return channels.filter(
+              (c) => !joinedChannels.includes(c.id as string)
+            );
+          });
         }
       }
     });

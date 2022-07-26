@@ -8,7 +8,7 @@ export const useChannel = (channelId: string) => {
       (res) => res.data
     );
   };
-  return useQuery(["channel"], () => fetchChannel(channelId), {
+  return useQuery([`channel-${channelId}`], () => fetchChannel(channelId), {
     enabled: !!channelId,
   });
 };

@@ -50,8 +50,8 @@ const Dashboard: NextPage = () => {
           {tenant &&
             tenant.__channels__ &&
             tenant.__channels__.length > 0 &&
-            tenant.__channels__.map((channel) => (
-              <UpdateSettingsCard channel={channel} />
+            tenant.__channels__.map((channel, index) => (
+              <UpdateSettingsCard key={index} channel={channel} />
             ))}
           <AddChannelCard />
         </Grid>

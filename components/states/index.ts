@@ -23,3 +23,11 @@ export const tenantIdSelector = selector<string | undefined>({
     return tenant?.id;
   },
 });
+
+export const joinedChannelIdsSelector = selector<string[]>({
+  key: "joinedChannelIds",
+  get: ({ get }) => {
+    const tenant = get(tenantState);
+    return tenant?.__channels__.map((c) => c.slack_id) || [];
+  },
+});
