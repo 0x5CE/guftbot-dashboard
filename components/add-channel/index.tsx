@@ -34,8 +34,8 @@ export const AddChannel = ({ updateChannel }: AddChannelProps) => {
   };
 
   useEffect(() => {
-    fetchChannels();
-  }, []);
+    if (accessToken) fetchChannels();
+  }, [accessToken]);
 
   return (
     <Flex
