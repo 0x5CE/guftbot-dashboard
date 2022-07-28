@@ -6,9 +6,9 @@ export default async function handler(
   res: NextApiResponse
 ) {
   console.log("Using this");
-  console.log(req.body.token);
+  console.log(req.body.accessToken);
   const response = await app.client.conversations.list({
-    token: req.body.access_token,
+    token: req.body.accessToken,
   });
   res.json(response);
 }

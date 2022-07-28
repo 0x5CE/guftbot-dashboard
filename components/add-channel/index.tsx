@@ -34,7 +34,10 @@ export const AddChannel = ({ updateChannel }: AddChannelProps) => {
   };
 
   useEffect(() => {
-    if (accessToken) fetchChannels();
+    if (accessToken) {
+      console.log({ accessToken });
+      fetchChannels();
+    }
   }, [accessToken]);
 
   return (
