@@ -23,7 +23,11 @@ const Home: NextPage = () => {
       (async () => {
         const response = await NextApiClient.post("exchange", {
           code: router.query.code,
-        }).then((res) => res.data.response);
+        })
+          .then((res) => res.data.response)
+          .catch((err) => {
+            console.error(err.response.data);
+          });
 
         if (!response || !response.ok) {
           router.push("/error");
