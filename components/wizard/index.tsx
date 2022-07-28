@@ -36,7 +36,7 @@ export const Wizard = () => {
   const router = useRouter();
 
   const tenantId = useRecoilValue(tenantIdSelector);
-  const [_, setTenant] = useRecoilState(tenantState);
+  const [tenant, setTenant] = useRecoilState(tenantState);
 
   const [isNewChannelCreated, setIsNewChannelCreated] = useState(false);
   const [channelSettings, setChannelSettings] =
@@ -48,6 +48,21 @@ export const Wizard = () => {
 
   const [createChannelDto, setCreateChannelDto] =
     useState<CreateChannelDto | null>(null);
+
+  useEffect(() => {
+    if (!tenant || !tenantId) {
+      const tenantJSON = localStorage.getItem("tenant");
+      if (!tenantJSON) {
+        router.replace("/");
+        return;
+      }
+      setTenant(JSON.parse(tenantJSON) as Tenant);
+    }
+  }, [tenant]);
+
+  useEffect(() => {
+    console.log({ tenantId });
+  }, [tenantId]);
 
   const updateChannelSettings = (channel: Channel) => {
     setChannelSettings({
