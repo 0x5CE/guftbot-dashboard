@@ -45,6 +45,10 @@ export const ChangeTime = () => {
     }
   }, [channel, isLoading, isError]);
 
+  useEffect(() => {
+    console.log({ tenant });
+  }, [tenant]);
+
   const handleSaveClick = () => {
     const timezoneOffset = new Date().getTimezoneOffset();
 
@@ -76,10 +80,6 @@ export const ChangeTime = () => {
         queryClient.invalidateQueries([`channel-${channelId}`]);
       });
   };
-
-  useEffect(() => {
-    console.log(selectedTime?.toISOString());
-  });
 
   return (
     <Flex

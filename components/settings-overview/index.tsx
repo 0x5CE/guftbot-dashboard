@@ -10,11 +10,18 @@ import { UpdateChannelQuestionsQueueDto } from "../../types/update_channel_quest
 import { BotApiClient } from "../axios";
 import { Schedule } from "../schedule";
 import { tenantState } from "../states";
+import { EditQuestionModal } from "./edit-question-modal";
 
 export const SettingsOverview = () => {
   const { channelId: chId } = useRouter().query;
   const [channelId, setChannelId] = useState(chId);
   const [questions, setQuestions] = useState<QueuedQuestions[]>([]);
+  const [editQuestion, setEditQuestion] = useState<QueuedQuestions | null>(
+    null
+  );
+  const [editQuestionIndex, setEditQuestionIndex] = useState<number>(-1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const {
     data: channel,
     isLoading,
@@ -30,15 +37,31 @@ export const SettingsOverview = () => {
   }, [channel, isLoading, isError]);
 
   useEffect(() => {
+    if (editQuestion && editQuestionIndex > -1) {
+      setIsModalOpen(true);
+    } else {
+      setIsModalOpen(false);
+    }
+  }, [editQuestion, editQuestionIndex]);
+
+  useEffect(() => {
     if (chId) {
       setChannelId(chId);
     }
   }, [chId]);
 
-  const [unsavedChanges, setUnsavedChanges] = useState(false);
-  const queryClient = useQueryClient();
+  const closeModal = () => {
+    setEditQuestion(null);
+    setEditQuestionIndex(-1);
+  };
 
-  const handleSaveClick = () => {
+  const editQuestionAtIndex = (question: QueuedQuestions, index: number) => {
+    console.log(index);
+    setEditQuestion(question);
+    setEditQuestionIndex(index);
+  };
+
+  const updateChannelQuestions = () => {
     const updateChannelQuestions: UpdateChannelQuestionsQueueDto = {
       id: channelId as string,
       questionsQueue: questions,
@@ -52,6 +75,13 @@ export const SettingsOverview = () => {
         localStorage.setItem("tenant", JSON.stringify(tenant));
         queryClient.invalidateQueries([`channel-${channelId}`]);
       });
+  };
+
+  const [unsavedChanges, setUnsavedChanges] = useState(false);
+  const queryClient = useQueryClient();
+
+  const handleSaveClick = () => {
+    updateChannelQuestions();
   };
 
   return (
@@ -105,8 +135,17 @@ export const SettingsOverview = () => {
           setUnsavedChanges={setUnsavedChanges}
           questions={questions}
           setQuestions={setQuestions}
+          editQuestionAtIndex={editQuestionAtIndex}
         />
       )}
+      <EditQuestionModal
+        isOpen={isModalOpen}
+        closeModal={closeModal}
+        queuedQuestion={editQuestion}
+        setQuestions={setQuestions}
+        questionIndex={editQuestionIndex}
+        updateChannelQuestions={updateChannelQuestions}
+      />
     </Box>
   );
 };

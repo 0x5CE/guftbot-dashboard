@@ -1,10 +1,10 @@
 {
   "display_information": {
-    "name": "Test Bot"
+    "name": "Work Besties Dev"
   },
   "features": {
     "bot_user": {
-      "display_name": "testBot",
+      "display_name": "WorkBesties",
       "always_online": false
     }
   },

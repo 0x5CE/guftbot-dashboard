@@ -24,7 +24,7 @@ const Home: NextPage = () => {
             Slack to get started!
           </Text>
           <Link
-            href="https://slack.com/oauth/v2/authorize?client_id=2964626451557.3827528901031&scope=channels:join,chat:write,im:history,channels:history,channels:manage,channels:read,groups:read,im:write,users:read.email,users:read&user_scope=identity.basic"
+            href="https://slack.com/oauth/v2/authorize?client_id=2964626451557.3874596300898&scope=channels:join,chat:write,im:history,channels:history,channels:manage,channels:read,groups:read,im:write,users:read.email,users:read&user_scope=identity.basic"
             passHref
           >
             <a>

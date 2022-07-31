@@ -60,11 +60,14 @@ const convertQuestionsToRow = (questions: QueuedQuestions[]): Data[] => {
   if (!questions) {
     return [];
   }
+
+  console.log({ questions });
+
   const data: Data[] = questions.map((q) => ({
     date: new Date(q.date).toDateString().split(" ").slice(0, -1).join(" "),
     prompt: q.text,
     isPicture: q.image_url ? true : false,
-    topics: q.category.name,
+    topics: q.__categories__.map((c) => c.name).join(", "),
     actions: true,
   }));
 
@@ -75,12 +78,14 @@ interface ScheduleProps {
   questions: QueuedQuestions[];
   setUnsavedChanges: Dispatch<SetStateAction<boolean>>;
   setQuestions: Dispatch<SetStateAction<QueuedQuestions[]>>;
+  editQuestionAtIndex: (question: QueuedQuestions, index: number) => void;
 }
 
 export const Schedule = ({
   questions,
   setQuestions,
   setUnsavedChanges,
+  editQuestionAtIndex,
 }: ScheduleProps) => {
   const [activeId, setActiveId] = useState<number | null>(null);
 
@@ -150,6 +155,10 @@ export const Schedule = ({
     return row;
   }, [activeId, table]);
 
+  const editQuestion = (index: number) => {
+    editQuestionAtIndex(questions[index], index);
+  };
+
   return (
     <DndContext
       sensors={sensors}
@@ -177,7 +186,11 @@ export const Schedule = ({
         <Tbody>
           <SortableContext items={items} strategy={verticalListSortingStrategy}>
             {table.getRowModel().rows.map((row, index) => (
-              <DraggableTableRow key={index} row={row} />
+              <DraggableTableRow
+                key={index}
+                row={row}
+                editQuestion={editQuestion}
+              />
             ))}
           </SortableContext>
         </Tbody>
@@ -186,7 +199,7 @@ export const Schedule = ({
         {activeId && selectedRow && (
           <Table>
             <Tbody>
-              <StaticTableRow row={selectedRow} />
+              <StaticTableRow row={selectedRow} editQuestion={editQuestion} />
             </Tbody>
           </Table>
         )}

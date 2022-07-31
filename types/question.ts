@@ -17,8 +17,5 @@ export interface QueuedQuestions {
   text: string;
   image_url?: string;
   isEdited: boolean;
-  category: {
-    id: string;
-    name: string;
-  };
+  __categories__: Category[];
 }
