@@ -18,9 +18,10 @@ import { DragHandle } from "./drag-handle";
 export interface RowProps {
   row: Row<Data>;
   editQuestion: (index: number) => void;
+  deleteQuestion: (index: number) => void;
 }
 
-const DraggableTableRow = ({ row, editQuestion }: RowProps) => {
+const DraggableTableRow = ({ row, editQuestion, deleteQuestion }: RowProps) => {
   const {
     attributes,
     listeners,
@@ -80,7 +81,9 @@ const DraggableTableRow = ({ row, editQuestion }: RowProps) => {
                       <MenuItem onClick={() => editQuestion(row.index)}>
                         Edit Message
                       </MenuItem>
-                      <MenuItem>Delete Message</MenuItem>
+                      <MenuItem onClick={() => deleteQuestion(row.index)}>
+                        Delete Message
+                      </MenuItem>
                     </MenuList>
                   </Menu>
                 </Td>

@@ -25,6 +25,7 @@ import {
 } from "@tanstack/react-table";
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { QueuedQuestions } from "../../types/question";
+import { DeleteQuestionModal } from "./delete-question-modal";
 import { DraggableTableRow } from "./draggable-table-row";
 import { StaticTableRow } from "./static-table-row";
 
@@ -87,6 +88,9 @@ export const Schedule = ({
   setUnsavedChanges,
   editQuestionAtIndex,
 }: ScheduleProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteQuestionId, setDeleteQuestionId] = useState<string | null>(null);
+
   const [activeId, setActiveId] = useState<number | null>(null);
 
   const rowsData = useMemo<Data[]>(() => {
@@ -158,6 +162,21 @@ export const Schedule = ({
   const editQuestion = (index: number) => {
     editQuestionAtIndex(questions[index], index);
   };
+  const deleteQuestion = (index: number) => {
+    setDeleteQuestionId(questions[index].id);
+  };
+
+  const modalClose = () => {
+    setDeleteQuestionId(null);
+  };
+
+  useEffect(() => {
+    if (deleteQuestionId) {
+      setIsModalOpen(true);
+    } else {
+      setIsModalOpen(false);
+    }
+  }, [deleteQuestionId]);
 
   return (
     <DndContext
@@ -168,6 +187,11 @@ export const Schedule = ({
       collisionDetection={closestCenter}
       modifiers={[restrictToVerticalAxis]}
     >
+      <DeleteQuestionModal
+        isOpen={isModalOpen}
+        closeModal={modalClose}
+        questionId={deleteQuestionId}
+      />
       <Table>
         <Thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -190,6 +214,7 @@ export const Schedule = ({
                 key={index}
                 row={row}
                 editQuestion={editQuestion}
+                deleteQuestion={deleteQuestion}
               />
             ))}
           </SortableContext>
@@ -199,7 +224,11 @@ export const Schedule = ({
         {activeId && selectedRow && (
           <Table>
             <Tbody>
-              <StaticTableRow row={selectedRow} editQuestion={editQuestion} />
+              <StaticTableRow
+                row={selectedRow}
+                editQuestion={editQuestion}
+                deleteQuestion={deleteQuestion}
+              />
             </Tbody>
           </Table>
         )}
