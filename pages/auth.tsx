@@ -1,22 +1,18 @@
 import { Flex, Heading, Text } from "@chakra-ui/react";
 import type { NextPage } from "next";
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
 import { BotApiClient, NextApiClient } from "../components/axios";
 import { Navbar } from "../components/Navbar";
-import { tenantState } from "../components/states";
+import { useTenant } from "../hooks/use-tenant";
 import { CreateTenantDto } from "../types/create_tenant.dto";
+import { Tenant } from "../types/tenant";
 import { createTenantPayload } from "../util";
 
 const Home: NextPage = () => {
   const router = useRouter();
   const [createTenantBody, setCreateTenantBody] =
     useState<CreateTenantDto | null>(null);
-
-  const [tenant, setTenant] = useRecoilState(tenantState);
 
   useEffect(() => {
     if (router.query.code) {
@@ -43,22 +39,22 @@ const Home: NextPage = () => {
       return;
     }
     (async () => {
-      const response = await BotApiClient.post("tenant/add", createTenantBody);
+      const response = await BotApiClient.post<Tenant>(
+        "tenant/add",
+        createTenantBody
+      );
       if (response.status >= 200 && response.status < 300) {
-        setTenant(response.data);
+        localStorage.setItem("tenantId", response.data.id);
+        console.log(response.data);
+        if (response.data.__channels__.length == 0) {
+          router.push("/onboarding");
+        } else {
+          router.push("/dashboard");
+        }
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [createTenantBody]);
-
-  useEffect(() => {
-    if (!tenant) {
-      return;
-    }
-    localStorage.setItem("tenant", JSON.stringify(tenant));
-    router.push("/onboarding");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tenant]);
 
   return (
     <div>

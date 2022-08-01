@@ -9,12 +9,10 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { useRecoilState } from "recoil";
 import { Category } from "../../types/category";
 import { Tenant } from "../../types/tenant";
 import { UpdateChannelCategoriesDto } from "../../types/update_channel_categories";
 import { BotApiClient } from "../axios";
-import { tenantState } from "../states";
 
 export const ChangeCategories = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -23,9 +21,16 @@ export const ChangeCategories = () => {
   );
 
   const [unsavedChanges, setUnsavedChanges] = useState(false);
-  const [_, setTenant] = useRecoilState(tenantState);
   const { channelId } = useRouter().query;
   const queryClient = useQueryClient();
+  const [tenantId, setTenantId] = useState("");
+
+  useEffect(() => {
+    const tId = localStorage.getItem("tenantId");
+    if (tId) {
+      setTenantId(tId);
+    }
+  }, []);
 
   const fetchCategories = () => {
     BotApiClient.get<Category[]>("category/all").then((res) => {
@@ -43,9 +48,8 @@ export const ChangeCategories = () => {
     BotApiClient.put<Tenant>("/channel/categories", updateChannelCategories)
       .then((res) => res.data)
       .then((tenant) => {
-        setTenant(tenant);
-        localStorage.setItem("tenant", JSON.stringify(tenant));
         queryClient.invalidateQueries([`channel-${channelId}`]);
+        queryClient.invalidateQueries([`tenant-${tenantId}`]);
       });
   };
 

@@ -1,14 +1,20 @@
 import { AddIcon } from "@chakra-ui/icons";
-import { Badge, Box, Button, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, Heading, Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useRecoilState } from "recoil";
-import { Channel } from "../../types/channel";
-import { tenantState } from "../states";
+import { useEffect, useState } from "react";
+import { useTenant } from "../../hooks/use-tenant";
 
 const Sidebar = () => {
   const router = useRouter();
-  const [tenant] = useRecoilState(tenantState);
+  const [tenantId, setTenantId] = useState("");
+  const { data: tenant } = useTenant(tenantId ? tenantId : "");
 
+  useEffect(() => {
+    const tId = localStorage.getItem("tenantId");
+    if (tId) {
+      setTenantId(tId);
+    }
+  });
   return (
     <Box minHeight={"85vh"} height={"100%"} backgroundColor={"#fafafa"} py={10}>
       <Heading size="lg" mx={5} mr={10} mb={5}>

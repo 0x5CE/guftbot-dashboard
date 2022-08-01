@@ -2,13 +2,11 @@ import { Flex, Heading, HStack, Select, Input, Button } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
 import { useChannel } from "../../hooks/use-channel";
 import { Tenant } from "../../types/tenant";
 import { UpdateChannelTimeDto } from "../../types/update_channel_time";
 import { BotApiClient } from "../axios";
 import { possibleSchedules } from "../select-time";
-import { tenantState } from "../states";
 
 export const ChangeTime = () => {
   const [selectedSchedule, setSelectedSchedule] = useState("");
@@ -18,7 +16,6 @@ export const ChangeTime = () => {
   const { channelId: chId } = useRouter().query;
   const [channelId, setChannelId] = useState(chId);
 
-  const [tenant, setTenant] = useRecoilState(tenantState);
   const queryClient = useQueryClient();
 
   const {
@@ -44,10 +41,6 @@ export const ChangeTime = () => {
       setSelectedSchedule(channel.schedule);
     }
   }, [channel, isLoading, isError]);
-
-  useEffect(() => {
-    console.log({ tenant });
-  }, [tenant]);
 
   const handleSaveClick = () => {
     const timezoneOffset = new Date().getTimezoneOffset();
@@ -75,9 +68,8 @@ export const ChangeTime = () => {
       .then((res) => res.data)
       .then((tenant) => {
         setUnsavedChanges(false);
-        setTenant(tenant);
-        localStorage.setItem("tenant", JSON.stringify(tenant));
         queryClient.invalidateQueries([`channel-${channelId}`]);
+        queryClient.invalidateQueries([`tenant-${tenant.id}`]);
       });
   };
 
@@ -114,12 +106,7 @@ export const ChangeTime = () => {
           }}
           value={
             !unsavedChanges
-              ? selectedTime
-                  ?.toLocaleTimeString("en-US", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })
-                  .split(" ")[0]
+              ? selectedTime?.toTimeString().split(" ")[0]
               : undefined
           }
         ></Input>

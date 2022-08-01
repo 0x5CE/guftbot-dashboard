@@ -1,27 +1,31 @@
 import { Flex, Heading, Select, Button, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { BotApiClient, NextApiClient } from "../axios";
-import {
-  accessTokenSelector,
-  joinedChannelIdsSelector,
-  tenantState,
-} from "../states";
 import { ChannelsListResponse } from "@slack/web-api";
 import { Channel } from "@slack/web-api/dist/response/AdminUsergroupsListChannelsResponse";
 import { UpdateChannelNameDto } from "../../types/update_channel_name";
 import { useRouter } from "next/router";
 import { Tenant } from "../../types/tenant";
 import { useQueryClient } from "@tanstack/react-query";
+import { BotApiClient, NextApiClient } from "../axios";
+import { useTenant } from "../../hooks/use-tenant";
+import { useChannel } from "../../hooks/use-channel";
 
 const ChangeChannel = () => {
   const [channel, setChannel] = useState<Channel | null>(null);
   const [availableChannels, setAvailableChannels] = useState<Channel[]>([]);
-  const accessToken = useRecoilValue(accessTokenSelector);
-  const joinedChannels = useRecoilValue(joinedChannelIdsSelector);
-  const { channelId } = useRouter().query;
-  const [_, setTenant] = useRecoilState(tenantState);
+  const router = useRouter();
+  const { channelId: chId } = router.query;
+  const [channelId, setChannelId] = useState("");
   const queryClient = useQueryClient();
+  const [tenantId, setTenantId] = useState("");
+  const { data: tenant } = useTenant(tenantId ? tenantId : "");
+  const { data: currentChannel } = useChannel(channelId);
+
+  useEffect(() => {
+    if (chId && !Array.isArray(chId)) {
+      setChannelId(chId);
+    }
+  }, [chId]);
 
   const handleUpdateClick = () => {
     const updateChannelNameDto: UpdateChannelNameDto = {
@@ -33,21 +37,26 @@ const ChangeChannel = () => {
     BotApiClient.put<Tenant>("/channel/name", updateChannelNameDto)
       .then((res) => res.data)
       .then((tenant) => {
-        setTenant(tenant);
-        localStorage.setItem("tenant", JSON.stringify(tenant));
+        localStorage.setItem("tenantId", tenant.id);
         queryClient.invalidateQueries([`channel-${channelId}`]);
+        queryClient.invalidateQueries([`tenant-${tenant.id}`]);
       });
   };
 
   const fetchChannels = () => {
+    if (!tenant) {
+      console.log("Unable to fetch Channels");
+      return;
+    }
     return NextApiClient.post<ChannelsListResponse>("channel_list", {
-      accessToken,
+      accessToken: tenant.access_token,
     }).then((res) => {
       if (res.status >= 200 && res.status < 300) {
         const channels = res.data.channels;
 
         if (channels) {
           setAvailableChannels(() => {
+            const joinedChannels = tenant.__channels__.map((c) => c.id);
             return channels.filter(
               (c) => !joinedChannels.includes(c.id as string)
             );
@@ -57,9 +66,25 @@ const ChangeChannel = () => {
     });
   };
 
+  const handleDelete = () => {
+    BotApiClient.delete(`/channel?id=${channelId}`).then((res) => {
+      const status = res.status;
+      if (status === 200) {
+        router.push("/dashboard");
+      }
+    });
+  };
+
   useEffect(() => {
-    fetchChannels();
+    const tId = localStorage.getItem("tenantId");
+    if (tId) {
+      setTenantId(tId);
+    }
   }, []);
+
+  useEffect(() => {
+    if (tenant) fetchChannels();
+  }, [tenant]);
 
   return (
     <Flex
@@ -81,6 +106,9 @@ const ChangeChannel = () => {
         }
         width="50%"
         my={5}
+        value={availableChannels
+          .map((ac) => ac.name)
+          .indexOf(currentChannel?.name)}
       >
         {availableChannels.map((channel, index) => {
           return (
@@ -90,6 +118,15 @@ const ChangeChannel = () => {
       </Select>
       <Button disabled={!channel} onClick={handleUpdateClick}>
         Update
+      </Button>
+      <Button
+        onClick={handleDelete}
+        mt={5}
+        size={"sm"}
+        colorScheme={"red"}
+        variant={"ghost"}
+      >
+        Delete Channel
       </Button>
     </Flex>
   );

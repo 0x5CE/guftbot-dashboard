@@ -2,14 +2,13 @@ import { Box, Button, Flex, Heading, HStack, Text } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
 import { useChannel } from "../../hooks/use-channel";
+import { useTenant } from "../../hooks/use-tenant";
 import { QueuedQuestions } from "../../types/question";
 import { Tenant } from "../../types/tenant";
 import { UpdateChannelQuestionsQueueDto } from "../../types/update_channel_questions_queue";
 import { BotApiClient } from "../axios";
 import { Schedule } from "../schedule";
-import { tenantState } from "../states";
 import { EditQuestionModal } from "./edit-question-modal";
 
 export const SettingsOverview = () => {
@@ -28,7 +27,16 @@ export const SettingsOverview = () => {
     isError,
     error, // TODO: use this to show errors
   } = useChannel(channelId as string);
-  const [tenant, setTenant] = useRecoilState(tenantState);
+
+  const [tenantId, setTenantId] = useState("");
+  const { data: tenant } = useTenant(tenantId ? tenantId : "");
+
+  useEffect(() => {
+    const tId = localStorage.getItem("tenantId");
+    if (tId) {
+      setTenantId(tId);
+    }
+  }, []);
 
   useEffect(() => {
     if (!isLoading && !isError && channel) {
@@ -71,9 +79,8 @@ export const SettingsOverview = () => {
       .then((res) => res.data)
       .then((tenant) => {
         setUnsavedChanges(false);
-        setTenant(tenant);
-        localStorage.setItem("tenant", JSON.stringify(tenant));
         queryClient.invalidateQueries([`channel-${channelId}`]);
+        queryClient.invalidateQueries([`tenant-${tenantId}`]);
       });
   };
 

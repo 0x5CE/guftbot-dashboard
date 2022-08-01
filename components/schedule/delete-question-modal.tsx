@@ -11,10 +11,8 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
 import { DeleteQuestionFromQueueDto } from "../../types/delete_question_from_queue";
 import { BotApiClient } from "../axios";
-import { tenantState } from "../states";
 
 interface DeleteQuestionModalProps {
   questionId: string | null;
@@ -28,7 +26,6 @@ export const DeleteQuestionModal = ({
   closeModal,
 }: DeleteQuestionModalProps) => {
   const [channelId, setChannelId] = useState("");
-  const [_, setTenant] = useRecoilState(tenantState);
   const queryClient = useQueryClient();
 
   const { channelId: chId } = useRouter().query;
@@ -52,9 +49,9 @@ export const DeleteQuestionModal = ({
     BotApiClient.put("/channel/question", dto)
       .then((res) => res.data)
       .then((tenant) => {
-        setTenant(tenant);
         localStorage.setItem("tenant", JSON.stringify(tenant));
         queryClient.invalidateQueries([`channel-${channelId}`]);
+        queryClient.invalidateQueries([`tenant-${tenant.id}`]);
       });
 
     closeModal();

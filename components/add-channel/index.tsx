@@ -2,9 +2,8 @@ import { Button, Flex, Heading, Select, Text } from "@chakra-ui/react";
 import { ChannelsListResponse } from "@slack/web-api";
 import { Channel } from "@slack/web-api/dist/response/AdminUsergroupsListChannelsResponse";
 import { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
+import { useTenant } from "../../hooks/use-tenant";
 import { NextApiClient } from "../axios";
-import { accessTokenSelector, joinedChannelIdsSelector } from "../states";
 
 interface AddChannelProps {
   updateChannel: (channel: Channel) => void;
@@ -13,17 +12,22 @@ interface AddChannelProps {
 export const AddChannel = ({ updateChannel }: AddChannelProps) => {
   const [channel, setChannel] = useState<Channel | null>(null);
   const [availableChannels, setAvailableChannels] = useState<Channel[]>([]);
-  const accessToken = useRecoilValue(accessTokenSelector);
-  const joinedChannels = useRecoilValue(joinedChannelIdsSelector);
+  const [tenantId, setTenantId] = useState("");
+  const { data: tenant } = useTenant(tenantId ? tenantId : "");
 
   const fetchChannels = () => {
+    if (!tenant) {
+      return;
+    }
+
     return NextApiClient.post<ChannelsListResponse>("channel_list", {
-      accessToken,
+      accessToken: tenant.access_token,
     }).then((res) => {
       if (res.status >= 200 && res.status < 300) {
         const channels = res.data.channels;
         if (channels) {
           setAvailableChannels(() => {
+            const joinedChannels = tenant.__channels__.map((c) => c.id);
             return channels.filter(
               (c) => !joinedChannels.includes(c.id as string)
             );
@@ -34,11 +38,17 @@ export const AddChannel = ({ updateChannel }: AddChannelProps) => {
   };
 
   useEffect(() => {
-    if (accessToken) {
-      console.log({ accessToken });
+    if (tenant) {
       fetchChannels();
     }
-  }, [accessToken]);
+  }, [tenant]);
+
+  useEffect(() => {
+    const tId = localStorage.getItem("tenantId");
+    if (tId) {
+      setTenantId(tId);
+    }
+  }, []);
 
   return (
     <Flex

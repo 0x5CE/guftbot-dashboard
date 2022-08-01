@@ -1,9 +1,10 @@
 import { Flex } from "@chakra-ui/react";
 import { Channel } from "@slack/web-api/dist/response/AdminUsergroupsListChannelsResponse";
+import { useQueryClient } from "@tanstack/react-query";
 import { Step, Steps, useSteps } from "chakra-ui-steps";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useTenant } from "../../hooks/use-tenant";
 import {
   ChannelSettingsDto,
   CreateChannelDto,
@@ -14,7 +15,6 @@ import { AddChannel } from "../add-channel";
 import { BotApiClient } from "../axios";
 import { SelectCategories } from "../select-categories";
 import { SelectTime } from "../select-time";
-import { tenantIdSelector, tenantState } from "../states";
 
 const steps = [
   {
@@ -34,9 +34,9 @@ export const Wizard = () => {
   });
 
   const router = useRouter();
-
-  const tenantId = useRecoilValue(tenantIdSelector);
-  const [tenant, setTenant] = useRecoilState(tenantState);
+  const queryClient = useQueryClient();
+  const [tenantId, setTenantId] = useState("");
+  const { data: tenant } = useTenant(tenantId ? tenantId : "");
 
   const [isNewChannelCreated, setIsNewChannelCreated] = useState(false);
   const [channelSettings, setChannelSettings] =
@@ -50,19 +50,18 @@ export const Wizard = () => {
     useState<CreateChannelDto | null>(null);
 
   useEffect(() => {
-    if (!tenant || !tenantId) {
-      const tenantJSON = localStorage.getItem("tenant");
-      if (!tenantJSON) {
-        router.replace("/");
-        return;
-      }
-      setTenant(JSON.parse(tenantJSON) as Tenant);
+    const tId = localStorage.getItem("tenantId");
+    if (tId) {
+      setTenantId(tId);
     }
-  }, [tenant]);
+  });
 
   useEffect(() => {
-    console.log({ tenantId });
-  }, [tenantId]);
+    if (!tenant && !tenantId) {
+      console.log("Unable to fetch Tenant");
+      return;
+    }
+  }, [tenant]);
 
   const updateChannelSettings = (channel: Channel) => {
     setChannelSettings({
@@ -114,8 +113,7 @@ export const Wizard = () => {
     );
     if (res.status > 200 && res.status < 300) {
       setIsNewChannelCreated(true);
-      setTenant(res.data);
-      localStorage.setItem("tenant", JSON.stringify(res.data));
+      queryClient.invalidateQueries([`tenant-${tenantId}`]);
     }
   };
 

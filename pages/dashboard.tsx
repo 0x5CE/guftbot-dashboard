@@ -1,32 +1,25 @@
 import { Box, Grid, Heading } from "@chakra-ui/react";
 import { NextPage } from "next";
-import { useRecoilState } from "recoil";
 import { NavItems } from "../components/nav-items";
 import { Navbar } from "../components/Navbar";
-import { tenantState } from "../components/states";
 import { UpdateSettingsCard } from "../components/update-settings-card";
 import { AddChannelCard } from "../components/add-channel-card";
 import { useRouter } from "next/router";
 import { Tenant } from "../types/tenant";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useTenant } from "../hooks/use-tenant";
 
 const Dashboard: NextPage = () => {
-  const [tenant, setTenant] = useRecoilState(tenantState);
+  const [tenantId, setTenantId] = useState("");
+  const { data: tenant } = useTenant(tenantId ? tenantId : "");
   const router = useRouter();
 
-  const fetchTenantFromLocalStorage = () => {
-    const tenantJsonString = localStorage.getItem("tenant");
-    if (!tenantJsonString) {
-      router.replace("/");
+  useEffect(() => {
+    const tId = localStorage.getItem("tenantId");
+    if (!tId) {
       return;
     }
-
-    const tenant: Tenant = JSON.parse(tenantJsonString);
-    setTenant(tenant);
-  };
-
-  useEffect(() => {
-    fetchTenantFromLocalStorage();
+    setTenantId(tId);
   }, []);
 
   return (
