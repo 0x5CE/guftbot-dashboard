@@ -9,6 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { BotApiClient, NextApiClient } from "../axios";
 import { useTenant } from "../../hooks/use-tenant";
 import { useChannel } from "../../hooks/use-channel";
+import { useToken } from "../../hooks/use-token";
 
 const ChangeChannel = () => {
   const [channel, setChannel] = useState<Channel | null>(null);
@@ -17,8 +18,8 @@ const ChangeChannel = () => {
   const { channelId: chId } = router.query;
   const [channelId, setChannelId] = useState("");
   const queryClient = useQueryClient();
-  const [tenantId, setTenantId] = useState("");
-  const { data: tenant } = useTenant(tenantId ? tenantId : "");
+  const { tenantId, token } = useToken();
+  const { data: tenant } = useTenant(tenantId);
   const { data: currentChannel } = useChannel(channelId);
 
   useEffect(() => {
@@ -34,7 +35,7 @@ const ChangeChannel = () => {
       name: channel?.name as string,
     };
 
-    BotApiClient.put<Tenant>("/channel/name", updateChannelNameDto)
+    BotApiClient.put<Tenant>("/channel/name", updateChannelNameDto, {})
       .then((res) => res.data)
       .then((tenant) => {
         localStorage.setItem("tenantId", tenant.id);
@@ -48,9 +49,17 @@ const ChangeChannel = () => {
       console.log("Unable to fetch Channels");
       return;
     }
-    return NextApiClient.post<ChannelsListResponse>("channel_list", {
-      accessToken: tenant.access_token,
-    }).then((res) => {
+    return NextApiClient.post<ChannelsListResponse>(
+      "channel_list",
+      {
+        accessToken: tenant.access_token,
+      },
+      {
+        headers: {
+          "x-auth-token": token,
+        },
+      }
+    ).then((res) => {
       if (res.status >= 200 && res.status < 300) {
         const channels = res.data.channels;
 
@@ -67,20 +76,17 @@ const ChangeChannel = () => {
   };
 
   const handleDelete = () => {
-    BotApiClient.delete(`/channel?id=${channelId}`).then((res) => {
+    BotApiClient.delete(`/channel?id=${channelId}`, {
+      headers: {
+        "x-auth-token": token,
+      },
+    }).then((res) => {
       const status = res.status;
       if (status === 200) {
         router.push("/dashboard");
       }
     });
   };
-
-  useEffect(() => {
-    const tId = localStorage.getItem("tenantId");
-    if (tId) {
-      setTenantId(tId);
-    }
-  }, []);
 
   useEffect(() => {
     if (tenant) fetchChannels();

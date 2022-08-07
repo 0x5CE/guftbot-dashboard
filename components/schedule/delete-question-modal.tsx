@@ -11,6 +11,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { useToken } from "../../hooks/use-token";
 import { DeleteQuestionFromQueueDto } from "../../types/delete_question_from_queue";
 import { BotApiClient } from "../axios";
 
@@ -27,6 +28,7 @@ export const DeleteQuestionModal = ({
 }: DeleteQuestionModalProps) => {
   const [channelId, setChannelId] = useState("");
   const queryClient = useQueryClient();
+  const { token } = useToken();
 
   const { channelId: chId } = useRouter().query;
   useEffect(() => {
@@ -46,10 +48,13 @@ export const DeleteQuestionModal = ({
       channelId,
     };
 
-    BotApiClient.put("/channel/question", dto)
+    BotApiClient.put("/channel/question", dto, {
+      headers: {
+        "x-auth-token": token,
+      },
+    })
       .then((res) => res.data)
       .then((tenant) => {
-        localStorage.setItem("tenant", JSON.stringify(tenant));
         queryClient.invalidateQueries([`channel-${channelId}`]);
         queryClient.invalidateQueries([`tenant-${tenant.id}`]);
       });

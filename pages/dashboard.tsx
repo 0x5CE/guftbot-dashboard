@@ -1,36 +1,34 @@
 import { Box, Grid, Heading } from "@chakra-ui/react";
 import { NextPage } from "next";
 import { NavItems } from "../components/nav-items";
-import { Navbar } from "../components/Navbar";
+import { Navbar } from "../components/navbar";
 import { UpdateSettingsCard } from "../components/update-settings-card";
 import { AddChannelCard } from "../components/add-channel-card";
 import { useRouter } from "next/router";
 import { Tenant } from "../types/tenant";
 import { useEffect, useState } from "react";
 import { useTenant } from "../hooks/use-tenant";
+import { useToken } from "../hooks/use-token";
 
 const Dashboard: NextPage = () => {
-  const [tenantId, setTenantId] = useState("");
+  const { tenantId } = useToken();
   const { data: tenant } = useTenant(tenantId ? tenantId : "");
   const router = useRouter();
 
   useEffect(() => {
-    const tId = localStorage.getItem("tenantId");
-    if (!tId) {
-      return;
+    if (tenant && tenant.__channels__.length == 0) {
+      router.replace("/onboarding");
     }
-    setTenantId(tId);
-  }, []);
+  }, [tenant]);
 
   return (
     <div>
       <Navbar>
-        <Heading textTransform={"lowercase"}>guft Bot</Heading>
         <NavItems />
       </Navbar>
       <Box mt={10}>
         <Heading textAlign={"center"} fontSize="5xl">
-          Your guft bot channels
+          Your Work Besties channels
         </Heading>
 
         <Grid

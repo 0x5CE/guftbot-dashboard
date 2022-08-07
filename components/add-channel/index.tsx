@@ -1,8 +1,10 @@
 import { Button, Flex, Heading, Select, Text } from "@chakra-ui/react";
 import { ChannelsListResponse } from "@slack/web-api";
 import { Channel } from "@slack/web-api/dist/response/AdminUsergroupsListChannelsResponse";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTenant } from "../../hooks/use-tenant";
+import { useToken } from "../../hooks/use-token";
 import { NextApiClient } from "../axios";
 
 interface AddChannelProps {
@@ -12,17 +14,26 @@ interface AddChannelProps {
 export const AddChannel = ({ updateChannel }: AddChannelProps) => {
   const [channel, setChannel] = useState<Channel | null>(null);
   const [availableChannels, setAvailableChannels] = useState<Channel[]>([]);
-  const [tenantId, setTenantId] = useState("");
+  const { token, tenantId } = useToken();
   const { data: tenant } = useTenant(tenantId ? tenantId : "");
+  const router = useRouter();
 
   const fetchChannels = () => {
     if (!tenant) {
       return;
     }
 
-    return NextApiClient.post<ChannelsListResponse>("channel_list", {
-      accessToken: tenant.access_token,
-    }).then((res) => {
+    return NextApiClient.post<ChannelsListResponse>(
+      "channel_list",
+      {
+        accessToken: tenant.access_token,
+      },
+      {
+        headers: {
+          "x-auth-token": token,
+        },
+      }
+    ).then((res) => {
       if (res.status >= 200 && res.status < 300) {
         const channels = res.data.channels;
         if (channels) {
@@ -42,13 +53,6 @@ export const AddChannel = ({ updateChannel }: AddChannelProps) => {
       fetchChannels();
     }
   }, [tenant]);
-
-  useEffect(() => {
-    const tId = localStorage.getItem("tenantId");
-    if (tId) {
-      setTenantId(tId);
-    }
-  }, []);
 
   return (
     <Flex

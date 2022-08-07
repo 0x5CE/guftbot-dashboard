@@ -20,9 +20,10 @@ export const AddChannelCard = () => {
         justifyContent="space-evenly"
         height="100%"
       >
-        <Text>Add Guft to another channel</Text>
-        <Text>
-          Guft will break the ice and spark conversation amongst your team
+        <Text>Add Work Besties to another channel</Text>
+        <Text textAlign={"center"}>
+          Work Besties bot will break the ice and spark conversation amongst
+          your team
         </Text>
         <Button
           size={"sm"}

@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useChannel } from "../../hooks/use-channel";
 import { useTenant } from "../../hooks/use-tenant";
+import { useToken } from "../../hooks/use-token";
 import { QueuedQuestions } from "../../types/question";
 import { Tenant } from "../../types/tenant";
 import { UpdateChannelQuestionsQueueDto } from "../../types/update_channel_questions_queue";
@@ -27,16 +28,7 @@ export const SettingsOverview = () => {
     isError,
     error, // TODO: use this to show errors
   } = useChannel(channelId as string);
-
-  const [tenantId, setTenantId] = useState("");
-  const { data: tenant } = useTenant(tenantId ? tenantId : "");
-
-  useEffect(() => {
-    const tId = localStorage.getItem("tenantId");
-    if (tId) {
-      setTenantId(tId);
-    }
-  }, []);
+  const { tenantId, token } = useToken();
 
   useEffect(() => {
     if (!isLoading && !isError && channel) {
@@ -75,7 +67,11 @@ export const SettingsOverview = () => {
       questionsQueue: questions,
     };
 
-    BotApiClient.put<Tenant>("/channel/questions", updateChannelQuestions)
+    BotApiClient.put<Tenant>("/channel/questions", updateChannelQuestions, {
+      headers: {
+        "x-auth-token": token,
+      },
+    })
       .then((res) => res.data)
       .then((tenant) => {
         setUnsavedChanges(false);
@@ -95,7 +91,7 @@ export const SettingsOverview = () => {
     <Box>
       <Flex alignItems={"center"}>
         <HStack backgroundColor="gray.100" p={5} ml={3} my={10} flex="1">
-          <Text fontSize={" 3xl"}>Guft is happening </Text>
+          <Text fontSize={"xl"}>Ice breaking is happening </Text>
           <Text
             fontSize={"3xl"}
             fontWeight={"black"}
@@ -128,9 +124,8 @@ export const SettingsOverview = () => {
           Save Changes
         </Button>
       </Flex>
-
       <Heading>
-        The next {`${channel?.questionsQueue.length}`} upcoming Guft messages!
+        The next {`${channel?.questionsQueue.length}`} upcoming messages!
       </Heading>
       {unsavedChanges && (
         <Text ml={3} fontSize="sm" color={"GrayText"}>

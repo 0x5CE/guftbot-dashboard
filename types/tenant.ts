@@ -10,14 +10,16 @@ export interface Tenant {
   workspace_id: string;
   is_enterprise: boolean;
   is_paid_plan: boolean;
-  billingHistory: BillingHistory[];
   __channels__: Channel[];
   bot_user_id: string;
   user_slack_id: string;
-  schedule: string;
-  time: string;
-  timezone: string;
-  categories: Category[];
+  is_trial: boolean;
+  trial_end_date: Date;
+  is_enabled: boolean;
+  subscription_type: string;
+  subscription_start_date: Date;
+  stripe_customer_id: string;
+  stripe_subscription_id: string;
   createdAt: Date;
   updatedAt: Date;
 }

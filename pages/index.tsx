@@ -2,14 +2,12 @@ import { Flex, Heading, Text } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Navbar } from "../components/Navbar";
+import { Navbar } from "../components/navbar";
 
 const Home: NextPage = () => {
   return (
     <div>
-      <Navbar>
-        <Heading textTransform={"lowercase"}>guft Bot</Heading>
-      </Navbar>
+      <Navbar></Navbar>
       <Flex mt={20}>
         <Flex
           direction="column"
@@ -39,11 +37,11 @@ const Home: NextPage = () => {
         </Flex>
         <Flex direction={"column"} alignItems={"center"} flex={1} p={25}>
           <Text mb={10} fontSize={"2xl"} textAlign="center">
-            If you already are registered with Guft Bot, sign in with slack to
-            access dashboard
+            If you already are registered with Work Besties Bot, sign in with
+            slack to access dashboard
           </Text>
           <Link
-            href="https://slack.com/openid/connect/authorize?scope=openid&amp;response_type=code&amp;redirect_uri=https%3A%2F%2F1a6f-2400-adc7-93b-7400-00-1.ngrok.io%2Flogin&amp;client_id=2964626451557.3801398660102"
+            href="https://slack.com/openid/connect/authorize?scope=openid&amp;response_type=code&amp;redirect_uri=https%3A%2F%2Fcabd-2400-adc7-93b-7400-00-1.ngrok.io%2Flogin&amp;client_id=2964626451557.3874596300898"
             passHref
           >
             <a>

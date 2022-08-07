@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useChannel } from "../../hooks/use-channel";
+import { useToken } from "../../hooks/use-token";
 import { Tenant } from "../../types/tenant";
 import { UpdateChannelTimeDto } from "../../types/update_channel_time";
 import { BotApiClient } from "../axios";
@@ -17,6 +18,7 @@ export const ChangeTime = () => {
   const [channelId, setChannelId] = useState(chId);
 
   const queryClient = useQueryClient();
+  const { token } = useToken();
 
   const {
     data: channel,
@@ -64,7 +66,11 @@ export const ChangeTime = () => {
       schedule: selectedSchedule,
     };
 
-    BotApiClient.put<Tenant>("/channel/time", updateChannelTimeDto)
+    BotApiClient.put<Tenant>("/channel/time", updateChannelTimeDto, {
+      headers: {
+        "x-auth-token": token,
+      },
+    })
       .then((res) => res.data)
       .then((tenant) => {
         setUnsavedChanges(false);

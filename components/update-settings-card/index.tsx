@@ -26,7 +26,7 @@ export const UpdateSettingsCard = ({ channel }: UpdateSettingsProps) => {
         height="100%"
         px={2}
       >
-        <Text>Guft happening in</Text>
+        <Text>Work Besties added in</Text>
         <Text fontWeight={"bold"}>{`#${channel.name}`}</Text>
         <HStack>
           <Text fontWeight={"bold"}>{`${channel.schedule} `}</Text>
@@ -42,7 +42,7 @@ export const UpdateSettingsCard = ({ channel }: UpdateSettingsProps) => {
           onClick={() => router.push(`/settings/${channel.id}`)}
           size={"sm"}
           leftIcon={<SettingsIcon />}
-          colorScheme={"teal"}
+          colorScheme={"yellow"}
         >
           Update Settings
         </Button>

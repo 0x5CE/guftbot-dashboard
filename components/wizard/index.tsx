@@ -5,6 +5,7 @@ import { Step, Steps, useSteps } from "chakra-ui-steps";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTenant } from "../../hooks/use-tenant";
+import { useToken } from "../../hooks/use-token";
 import {
   ChannelSettingsDto,
   CreateChannelDto,
@@ -35,7 +36,7 @@ export const Wizard = () => {
 
   const router = useRouter();
   const queryClient = useQueryClient();
-  const [tenantId, setTenantId] = useState("");
+  const { tenantId, token } = useToken();
   const { data: tenant } = useTenant(tenantId ? tenantId : "");
 
   const [isNewChannelCreated, setIsNewChannelCreated] = useState(false);
@@ -48,13 +49,6 @@ export const Wizard = () => {
 
   const [createChannelDto, setCreateChannelDto] =
     useState<CreateChannelDto | null>(null);
-
-  useEffect(() => {
-    const tId = localStorage.getItem("tenantId");
-    if (tId) {
-      setTenantId(tId);
-    }
-  });
 
   useEffect(() => {
     if (!tenant && !tenantId) {
@@ -109,11 +103,16 @@ export const Wizard = () => {
   const sendCreateChannelRequest = async () => {
     const res = await BotApiClient.post<Tenant>(
       "channel/add",
-      createChannelDto
+      createChannelDto,
+      {
+        headers: {
+          "x-auth-token": token,
+        },
+      }
     );
     if (res.status > 200 && res.status < 300) {
-      setIsNewChannelCreated(true);
       queryClient.invalidateQueries([`tenant-${tenantId}`]);
+      setIsNewChannelCreated(true);
     }
   };
 

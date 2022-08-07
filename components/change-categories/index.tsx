@@ -9,6 +9,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
+import { useToken } from "../../hooks/use-token";
 import { Category } from "../../types/category";
 import { Tenant } from "../../types/tenant";
 import { UpdateChannelCategoriesDto } from "../../types/update_channel_categories";
@@ -21,19 +22,17 @@ export const ChangeCategories = () => {
   );
 
   const [unsavedChanges, setUnsavedChanges] = useState(false);
-  const { channelId } = useRouter().query;
+  const router = useRouter();
+  const { channelId } = router.query;
   const queryClient = useQueryClient();
-  const [tenantId, setTenantId] = useState("");
-
-  useEffect(() => {
-    const tId = localStorage.getItem("tenantId");
-    if (tId) {
-      setTenantId(tId);
-    }
-  }, []);
+  const { tenantId, token } = useToken();
 
   const fetchCategories = () => {
-    BotApiClient.get<Category[]>("category/all").then((res) => {
+    BotApiClient.get<Category[]>("category/all", {
+      headers: {
+        "x-auth-token": token,
+      },
+    }).then((res) => {
       setAvailableCategories(res.data);
       setSelectedCategories(res.data.map((c) => c.id));
     });
@@ -45,7 +44,11 @@ export const ChangeCategories = () => {
       categories: selectedCategories,
     };
 
-    BotApiClient.put<Tenant>("/channel/categories", updateChannelCategories)
+    BotApiClient.put<Tenant>("/channel/categories", updateChannelCategories, {
+      headers: {
+        "x-auth-token": token,
+      },
+    })
       .then((res) => res.data)
       .then((tenant) => {
         queryClient.invalidateQueries([`channel-${channelId}`]);

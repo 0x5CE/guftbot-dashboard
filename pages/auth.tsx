@@ -3,7 +3,7 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { BotApiClient, NextApiClient } from "../components/axios";
-import { Navbar } from "../components/Navbar";
+import { Navbar } from "../components/navbar";
 import { useTenant } from "../hooks/use-tenant";
 import { CreateTenantDto } from "../types/create_tenant.dto";
 import { Tenant } from "../types/tenant";
@@ -39,16 +39,13 @@ const Home: NextPage = () => {
       return;
     }
     (async () => {
-      const response = await BotApiClient.post<Tenant>(
+      const response = await BotApiClient.post<string>(
         "tenant/add",
         createTenantBody
       );
       if (response.status >= 200 && response.status < 300) {
-        localStorage.setItem("tenantId", response.data.id);
-        console.log(response.data);
-        if (response.data.__channels__.length == 0) {
-          router.push("/onboarding");
-        } else {
+        if (response.data) {
+          localStorage.setItem("token", response.data);
           router.push("/dashboard");
         }
       }
@@ -58,9 +55,7 @@ const Home: NextPage = () => {
 
   return (
     <div>
-      <Navbar>
-        <Heading textTransform={"lowercase"}>guft Bot</Heading>
-      </Navbar>
+      <Navbar></Navbar>
       <Flex mt={20} justifyContent={"center"} alignItems={"center"}>
         <Heading>Redirecting...</Heading>
       </Flex>

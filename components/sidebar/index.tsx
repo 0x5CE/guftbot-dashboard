@@ -3,18 +3,12 @@ import { Box, Button, Heading, Text } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useTenant } from "../../hooks/use-tenant";
+import { useToken } from "../../hooks/use-token";
 
 const Sidebar = () => {
   const router = useRouter();
-  const [tenantId, setTenantId] = useState("");
+  const { tenantId } = useToken();
   const { data: tenant } = useTenant(tenantId ? tenantId : "");
-
-  useEffect(() => {
-    const tId = localStorage.getItem("tenantId");
-    if (tId) {
-      setTenantId(tId);
-    }
-  });
   return (
     <Box minHeight={"85vh"} height={"100%"} backgroundColor={"#fafafa"} py={10}>
       <Heading size="lg" mx={5} mr={10} mb={5}>

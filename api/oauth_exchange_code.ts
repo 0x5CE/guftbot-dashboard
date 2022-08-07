@@ -5,5 +5,6 @@ export const oauthExchangeCode = (code: string) => {
     client_id: process.env.CLIENT_ID as string,
     client_secret: process.env.CLIENT_SECRET as string,
     code: code,
+    redirect_uri: "https://cabd-2400-adc7-93b-7400-00-1.ngrok.io/login",
   });
 };
