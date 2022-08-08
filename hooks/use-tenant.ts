@@ -11,7 +11,7 @@ export const useTenant = (tenantId: string) => {
       (res) => res.data
     );
   };
-  return useQuery([`channel-${tenantId}`], () => fetchTenant(tenantId), {
+  return useQuery([`tenant-${tenantId}`], () => fetchTenant(tenantId), {
     enabled: !!tenantId && !!token,
   });
 };
