@@ -20,6 +20,8 @@ const Home: NextPage = () => {
       "exchange",
       {
         code: router.query.code,
+        redirect_uri: process.env
+          .NEXT_PUBLIC_SLACK_REDIRECT_URI_LOGIN as string,
       }
     )
       .then((res) => res.data.response)

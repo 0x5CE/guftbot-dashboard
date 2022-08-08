@@ -5,7 +5,9 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const response = await oauthExchangeCode(req.body.code);
-  console.log("got this", response.authed_user?.access_token);
+  const response = await oauthExchangeCode(
+    req.body.code,
+    req.body.redirect_uri
+  );
   res.json({ response });
 }

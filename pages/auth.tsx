@@ -19,6 +19,8 @@ const Home: NextPage = () => {
       (async () => {
         const response = await NextApiClient.post("exchange", {
           code: router.query.code,
+          redirect_uri: process.env
+            .NEXT_PUBLIC_SLACK_REDIRECT_URI_SIGNUP as string,
         })
           .then((res) => res.data.response)
           .catch((err) => {

@@ -42,7 +42,7 @@ const Home: NextPage = () => {
           </Text>
           <Link
             href={`https://slack.com/openid/connect/authorize?scope=openid&amp;response_type=code&amp;redirect_uri=${encodeURIComponent(
-              process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI as string
+              process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI_LOGIN as string
             )}&amp;client_id=2964626451557.3874596300898`}
             passHref
           >
