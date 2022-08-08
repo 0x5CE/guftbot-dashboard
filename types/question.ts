@@ -9,6 +9,7 @@ export interface Question {
   createdAt: Date;
 
   updatedAt: Date;
+  __categories__: Category[];
 }
 
 export interface QueuedQuestions {

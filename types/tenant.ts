@@ -14,7 +14,7 @@ export interface Tenant {
   bot_user_id: string;
   user_slack_id: string;
   is_trial: boolean;
-  trial_end_date: Date;
+  trial_end_date: string;
   is_enabled: boolean;
   subscription_type: string;
   subscription_start_date: Date;
