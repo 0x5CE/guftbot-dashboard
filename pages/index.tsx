@@ -41,7 +41,9 @@ const Home: NextPage = () => {
             slack to access dashboard
           </Text>
           <Link
-            href="https://slack.com/openid/connect/authorize?scope=openid&amp;response_type=code&amp;redirect_uri=https%3A%2F%2Fcabd-2400-adc7-93b-7400-00-1.ngrok.io%2Flogin&amp;client_id=2964626451557.3874596300898"
+            href={`https://slack.com/openid/connect/authorize?scope=openid&amp;response_type=code&amp;redirect_uri=${encodeURIComponent(
+              process.env.NEXT_PUBLIC_SLACK_REDIRECT_URI as string
+            )}&amp;client_id=2964626451557.3874596300898`}
             passHref
           >
             <a>
